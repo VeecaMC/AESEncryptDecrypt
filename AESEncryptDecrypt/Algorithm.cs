@@ -8,12 +8,13 @@ public class Algorithm
 
     public static async Task EncryptString(string sourceFilePath, string destinationFilePath, string strPwd)
     {
+        
         try
         {
             await using (FileStream fileStream = new(destinationFilePath, FileMode.OpenOrCreate))
             {
                 using Aes aes = Aes.Create();
-                byte[] key = Encoding.UTF8.GetBytes(strPwd);
+                byte[] key = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(strPwd));
                 aes.Key = key;
 
                 byte[] iv = aes.IV;
@@ -53,7 +54,7 @@ public class Algorithm
                 numBytesToRead -= n;
             }
 
-            byte[] key = Encoding.UTF8.GetBytes(strPwd);
+            byte[] key = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(strPwd));
 
             await using CryptoStream cryptoStream = new(
                        fileStream,
